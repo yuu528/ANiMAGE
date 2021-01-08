@@ -30,7 +30,7 @@ client.on('message', message => {
 	var tmp = [];
 	if(message.content.slice(-3).toLowerCase() == 'gif') {
 		var query = message.content.slice(0, -3);
-		var returnobj, data;
+		var sendObject, data;
 		var tmp2 = [];
 
 		https.get('https://api.tenor.com/v1/search?key=884QIY32W04B&contentfilter=off&limit=20&q=' + query, (res) => {
@@ -50,15 +50,54 @@ client.on('message', message => {
 							tmp2.push(chunk2);
 						}).on('end', () => {
 							var e2 = Buffer.concat(tmp2);
-                                			var data2 = JSON.parse(e2);
-							returnobj = data2.results[Math.floor(Math.random() * data2.results.length)];
-							message.channel.send({files: [returnobj.media[0].mediumgif.url]});
+                            var data2 = JSON.parse(e2);
+							var files = [], maxSizeFile = null;
+							data.results.forEach(arr => {
+								Object.keys(arr.media[0]).forEach(key => {
+									if(key.indexOf('gif') != -1 && arr.media[0][key].size < 8000000) {
+										if(maxSizeFile == null) {
+											maxSizeFile = arr.media[0][key];
+										} else {
+											if(arr.media[0][key].size > maxSizeFile.size) {
+												maxSizeFile = arr.media[0][key];
+											}
+										}
+									}
+								});
+								if(maxSizeFile != null)	files.push(maxSizeFile);
+								maxSizeFile = null;
+							});
+
+							sendObject = files[Math.floor(Math.random() * files.length)];
+							message.channel.send({files: [sendObject.url]});
 							return;
 						});
 					});
 				} else {
-					returnobj = data.results[Math.floor(Math.random() * data.results.length)];
-					message.channel.send({files: [returnobj.media[0].mediumgif.url]});
+					var files = [], maxSizeFile = null;
+					//結果をforEach
+					data.results.forEach(arr => {
+						//一つの画像の中のファイルタイプごと処理
+						Object.keys(arr.media[0]).forEach(key => {
+							//ファイルタイプがgifで8MB以下なら
+							if(key.indexOf('gif') != -1 && arr.media[0][key].size < 8000000) {
+								//一番大きなサイズのファイルのみmaxSizeFileに入れる
+								if(maxSizeFile == null) {
+									maxSizeFile = arr.media[0][key];
+								} else {
+									if(arr.media[0][key].size > maxSizeFile.size) {
+										maxSizeFile = arr.media[0][key];
+									}
+								}
+							}
+						});
+						//filesに入れてmaxSizeをリセット
+						if(maxSizeFile != null)	files.push(maxSizeFile);
+						maxSizeFile = null;
+					});
+
+					sendObject = files[Math.floor(Math.random() * files.length)];
+					message.channel.send({files: [sendObject.url]});
 				}
 			});
 		});
