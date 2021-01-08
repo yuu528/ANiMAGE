@@ -1,3 +1,5 @@
+/*jshint esversion: 8 */
+
 const https = require('https');
 const { JSDOM }	= require('jsdom');
 const libxmljs = require('libxmljs');
@@ -25,10 +27,11 @@ client.on('message', message => {
 	}
 
 	//後ろにgifが入ってたら処理
+	var tmp = [];
 	if(message.content.slice(-3).toLowerCase() == 'gif') {
 		var query = message.content.slice(0, -3);
 		var returnobj, data;
-		var tmp = [], tmp2 = [];
+		var tmp2 = [];
 
 		https.get('https://api.tenor.com/v1/search?key=884QIY32W04B&contentfilter=off&limit=20&q=' + query, (res) => {
 			res.on('data', (chunk) => {
@@ -40,7 +43,7 @@ client.on('message', message => {
 				var data = JSON.parse(e);
 
 				//検索結果0の場合
-				if(!data['results'].length) {
+				if(!data.results.length) {
 					//404のgifを探してそれを送る
 					 https.get('https://api.tenor.com/v1/search?key=884QIY32W04B&contentfilter=off&limit=20&q=404 not found', (res2) => {
                         			res2.on('data', (chunk2) => {
@@ -48,14 +51,14 @@ client.on('message', message => {
 						}).on('end', () => {
 							var e2 = Buffer.concat(tmp2);
                                 			var data2 = JSON.parse(e2);
-							returnobj = data2['results'][Math.floor(Math.random() * data2['results'].length)];
-							message.channel.send({files: [returnobj['media'][0]['mediumgif']['url']]});
+							returnobj = data2.results[Math.floor(Math.random() * data2.results.length)];
+							message.channel.send({files: [returnobj.media[0].mediumgif.url]});
 							return;
 						});
 					});
 				} else {
-					returnobj = data['results'][Math.floor(Math.random() * data['results'].length)];
-					message.channel.send({files: [returnobj['media'][0]['mediumgif']['url']]});
+					returnobj = data.results[Math.floor(Math.random() * data.results.length)];
+					message.channel.send({files: [returnobj.media[0].mediumgif.url]});
 				}
 			});
 		});
@@ -65,7 +68,6 @@ client.on('message', message => {
 		//空白を消した検索queryArr 0 = All, 1 = Name, 2 = (.*) or undefined
 		const query = message.content.slice(0, -3).replace(/( |　)/g, '').match(/^([^(（)]+)(?:\(|（)?([^)）]*)?(?:\)|）)?$/);
 		var url, imgUrl = null, sendMsg = '';
-		var tmp = [];
 
 		//期間限定グラフィックの場合はURL変更 ex. 山風(晴れ着mode)
 		if(query[2] == undefined) {
@@ -126,7 +128,6 @@ client.on('message', message => {
 
 			//分割 0 = All, 1 = Name, 2 = Mod or ''
 			const extendQuery = query.match(/^([^(（改]+)(?:\(|（)?(改造?|[^)）]*)(?:\)|）)?/);
-			var tmp = [];
 			const shipData = saratoga.ships.searchShipByName(extendQuery[1]);
 			if(shipData == null) {
 				message.channel.send('データの取得に失敗しました。');
@@ -180,7 +181,6 @@ client.on('message', message => {
 		}
 		const encodedName = ecl.EscapeEUCJP(query + '【基本情報】');
 		const url = 'https://seesaawiki.jp/hololivetv/d/' + encodedName;
-		var tmp = [];
 
 		https.get(url, (res) => {
 			res.on('data', (chunk) => {
@@ -203,7 +203,6 @@ client.on('message', message => {
 		});
 	} else if(message.content.slice(-5) == 'にじさんじ') {
 		const query = message.content.replace(/(にじさんじ| |　)/g, '');
-		var tmp = [];
 
 		https.get('https://wikiwiki.jp/nijisanji/' + query + '/::ref/face.png', (res) => {
 			res.on('data', (chunk) => {
