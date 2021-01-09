@@ -51,24 +51,29 @@ client.on('message', message => {
 						}).on('end', () => {
 							var e2 = Buffer.concat(tmp2);
                             var data2 = JSON.parse(e2);
-							var files = [], maxSizeFile = null;
-							data.results.forEach(arr => {
+							var files2 = [], maxSizeFile2 = null;
+							//結果をforEach
+							data2.results.forEach(arr => {
+								//一つの画像の中のファイルタイプごと処理
 								Object.keys(arr.media[0]).forEach(key => {
+									//ファイルタイプがgifで8MB以下なら
 									if(key.indexOf('gif') != -1 && arr.media[0][key].size < 8000000) {
-										if(maxSizeFile == null) {
-											maxSizeFile = arr.media[0][key];
+										//一番大きなサイズのファイルのみmaxSizeFileに入れる
+										if(maxSizeFile2 == null) {
+											maxSizeFile2 = arr.media[0][key];
 										} else {
-											if(arr.media[0][key].size > maxSizeFile.size) {
-												maxSizeFile = arr.media[0][key];
+											if(arr.media[0][key].size > maxSizeFile2.size) {
+												maxSizeFile2 = arr.media[0][key];
 											}
 										}
 									}
 								});
-								if(maxSizeFile != null)	files.push(maxSizeFile);
-								maxSizeFile = null;
+								//filesに入れてmaxSizeをリセット
+								if(maxSizeFile2 != null)	files2.push(maxSizeFile2);
+								maxSizeFile2 = null;
 							});
 
-							sendObject = files[Math.floor(Math.random() * files.length)];
+							sendObject = files2[Math.floor(Math.random() * files2.length)];
 							message.channel.send({files: [sendObject.url]});
 							return;
 						});
