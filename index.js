@@ -50,7 +50,7 @@ client.on('message', message => {
 							tmp2.push(chunk2);
 						}).on('end', () => {
 							var e2 = Buffer.concat(tmp2);
-                            var data2 = JSON.parse(e2);
+							var data2 = JSON.parse(e2);
 							var files2 = [], maxSizeFile2 = null;
 							//結果をforEach
 							data2.results.forEach(arr => {
