@@ -1,7 +1,6 @@
 /*jshint esversion: 8 */
 
 const https = require('https');
-const { JSDOM }	= require('jsdom');
 const libxmljs = require('libxmljs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
