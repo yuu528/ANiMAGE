@@ -222,7 +222,7 @@ client.on('message', message => {
 		if(message.content.indexOf('重傷') != -1) {
 			prefix = '_damage';
 		}
-		const query = message.content.replace(/(ドルフロ|ドールズフロントライン|重傷| |　)/g, '');
+		const query = message.content.replace(/(ドルフロ|ドールズフロントライン|重傷)/g, '').trim();
 
 		https.get('https://cdn.wikiwiki.jp/to/w/dolls-fl/' + query + '/::ref/' + query + prefix + '.jpg', (res) => {
 			res.on('data', (chunk) => {
