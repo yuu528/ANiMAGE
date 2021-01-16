@@ -217,6 +217,32 @@ client.on('message', message => {
 				}
 			}
 		}
+	} else if(message.content.slice(-4) == 'ドルフロ' || message.content.slice(-11) == 'ドールズフロントライン') {
+		let prefix = '';
+		if(message.content.indexOf('重傷') != -1) {
+			prefix = '_damage';
+		}
+		const query = message.content.replace(/(ドルフロ|ドールズフロントライン|重傷| |　)/g, '');
+
+		https.get('https://cdn.wikiwiki.jp/to/w/dolls-fl/' + query + '/::ref/' + query + prefix + '.jpg', (res) => {
+			res.on('data', (chunk) => {
+				tmp.push(chunk);
+			}).on('end', () => {
+				(async () => {
+					const buffer = Buffer.concat(tmp);
+					const fileExt = await filetype.fromBuffer(buffer);
+					if(fileExt != undefined) {
+						if(fileExt.mime == 'image/jpeg') {
+							message.channel.send('', new Discord.MessageAttachment(buffer, 'image.jpg'));
+						} else {
+							message.channel.send('データの取得に失敗しました。');
+						}
+					} else {
+						message.channel.send('データの取得に失敗しました。');
+					}
+				})();
+			});
+		});
 	} else if(message.content.slice(-5) == 'ホロライブ') {
 		const query = message.content.replace(/(ホロライブ| |　)/g, '');
 		if(query.toLowerCase() == 'yagoo' || query == '谷郷元昭' || query == '谷郷') {

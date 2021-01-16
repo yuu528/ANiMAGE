@@ -1,0 +1,4 @@
+name: ANiMAGE
+script: /home/pi/discord-bots/ANiMAGE/index.js
+watch: true
+log-date-format: "YYYY-MM-DD HH:mm Z" 
